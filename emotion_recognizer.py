@@ -13,22 +13,18 @@ import pprint
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'GCVision.json' #the credetials to talk to the API.
 client = vision.ImageAnnotatorClient()
-print("starting object recognizer...")
+print("starting emotion recognizer...")
 
-object_to_find = 0
-
-def get_object_from_cloud(image_path):
+def get_emotion_from_cloud(image_path):
 
     with io.open(image_path, 'rb') as image_file:
         content = image_file.read()
 
     image = vision.Image(content=content)
-    response = client.label_detection(image=image) #full response from Google cloud vision
-    label_annotations = response.label_annotations #array of objects labeled
-    #print(label_annotations)
-    description = label_annotations[0].description #get description of one object, the first being the one with the highest confidnce score.
-    print(description)
-
+    response = client.face_detection(image=image) #full response from Google cloud vision
+    #YOUR CODE UNDER THIS COMMENT
+    print(response)
+ 
 
 def get_image_from_frame(cap):
     ret, frame = cap.read()
@@ -38,7 +34,6 @@ def get_image_from_frame(cap):
     return file
 
 def start_camera():
-    global object_to_find
     os.system('sudo modprobe bcm2835-v4l2') #Force the Raspberry Pi to use the the Picamera, which CV2 will need to capture each frame.
 
     cap = cv2.VideoCapture(0)
@@ -52,7 +47,7 @@ def start_camera():
         if key == ord('q'): #press q to quit
             break
         elif key == ord('s'): #press s to see
-            get_object_from_cloud(img)
+            get_emotion_from_cloud(img)
     
     cap.release() #release the object when the app quits.
     cv2.destroyAllWindows()
